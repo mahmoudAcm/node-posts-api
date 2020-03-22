@@ -1,0 +1,24 @@
+{
+  "name": "work-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "run-mongod-cmd": "/c/Users/hp/mongodb/bin/mongod --dbpath=/c/Users/mongodb-data",
+    "dbg": "node inspect app",
+    "dev": "nodemon app",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.5",
+    "request": "^2.88.2"
+  }
+}
