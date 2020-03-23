@@ -20,6 +20,15 @@ app.post('/post/:id', async (req, res) => {
     }
 })
 
+
+app.get('/posts/:id', async (req, res) => {
+    try{
+        const posts = await Post.readPosts(req.params.id)
+        res.send(posts)
+    } catch(e){
+        res.send(e.message)
+    }
+})
  
 app.patch('/posts/:id', async (req, res) => { 
     try{

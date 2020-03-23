@@ -60,6 +60,20 @@ PostsSchema.statics.deletePost = async (postId) => {
     }
 }
 
+PostsSchema.statics.readPosts = async (userId) => {
+    try{
+        const posts = await Post.find({userId})
+        if(!posts.length) throw new Error('this post isn\'t found')
+        return new Promise((resolve, reject) => {
+            resolve(posts)
+        })
+    } catch(e){
+        return new Promise((resolve, reject) => {
+            reject(e)
+        })
+    }
+}
+
 const Post = mongoose.model('Post', PostsSchema)
 
 module.exports = Post
