@@ -31,4 +31,13 @@ app.patch('/posts/:id', async (req, res) => {
 })
 
 
+app.delete('/posts/:id', async (req, res) => {
+    try{ 
+        const user = await Post.deletePost(req.params.id)
+        res.send(user)
+    } catch(e){
+        res.send(e.message)
+    }
+})
+
 module.exports = app

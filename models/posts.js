@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('./users')
 
 const PostsSchema = new mongoose.Schema({
     userId:{
@@ -30,6 +31,32 @@ PostsSchema.statics.updatePost = async (data, postId) => {
       return new Promise((resolve, reject) => {
           reject(e)
       })
+    }
+}
+
+PostsSchema.statics.deletePost = async (postId) => {
+    try{
+       const post = await Post.findById({_id: postId})
+
+       if(!post) throw new Error('this post isn\'t found')
+
+       const user = await User.findById({_id: post.userId})
+
+       if(!user) throw new Error('this user isn\'t found')
+
+
+       user.posts = user.posts.filter((post) => {
+           return post.postId != postId 
+       })
+       
+       await Post.deleteOne({_id: post._id})
+       return await user.save()
+
+
+    } catch(e){
+        return new Promise((resolve, reject) => {
+            reject(e)
+        })
     }
 }
 
