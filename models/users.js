@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Post = require('./posts')
 
 const UserSchema = new mongoose.Schema({
     username:{
@@ -58,6 +59,23 @@ UserSchema.statics.updateUser = async (userId, data) => {
         })
     }
 
+}
+
+UserSchema.statics.deleteUser = async (userId) => {
+    try{
+        const user = await User.findById({_id: userId}) 
+        if(!user) throw new Error('This user isn\'t found')
+
+        await Post.deleteMany({userId})
+
+        await User.deleteOne({_id: userId})
+
+
+    } catch(e){
+        return new Promise((resolve, reject) => {
+            reject(e)
+        })
+    }
 }
 
 const User = mongoose.model('User', UserSchema)

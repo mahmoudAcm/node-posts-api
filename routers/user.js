@@ -22,4 +22,13 @@ app.patch('/users/:id', async (req, res) => {
     }
 })
 
+app.delete('/users/:id', async (req, res) => {
+   try{
+     await User.deleteUser(req.params.id)
+     res.send('User deleted sucessfully') 
+   } catch(e){
+     res.send(e.message)
+   }
+})
+
 module.exports = app
