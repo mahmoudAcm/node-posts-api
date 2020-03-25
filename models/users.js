@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Post = require('./posts')
 
 const UserSchema = new mongoose.Schema({
     username:{
@@ -15,68 +16,14 @@ const UserSchema = new mongoose.Schema({
     password:{
         type:String,
         required:true
-    },
-    posts:[{
-        postId:String
-    }]
+    }
 })
 
-UserSchema.statics.UserPosted = async (userId, postId) => {
-    try{
-        const user = await User.findById({_id: userId})
-        if(!user){
-            throw new Error('This user isn\'t found')
-        }
-
-        user.posts.push({postId})
-        await user.save()
-   } catch(e){
-        return new Promise((resolve, reject) => {
-            reject(e)
-        })
-   }
-}
-
-UserSchema.statics.updateUser = async (userId, data) => {
-    try{
-    const user = await User.findById({_id: userId})
-    if(!user){
-        throw new Error('This user isn\'t found')
-    }
-
-    dataKeys = Object.keys(data)
-
-    dataKeys.forEach((key) => {
-        user[key] = data[key]
-    });
-
-      return await user.save()
-
-    } catch(e){
-        return new Promise((resolve, reject) => {
-            reject(e)
-        })
-    }
-
-}
-
-UserSchema.statics.deleteUser = async (userId) => {
-    try{
-        const user = await User.findById({_id: userId}) 
-        const Post = require('./posts')
-        if(!user) throw new Error('This user isn\'t found')
-        
-        await Post.deleteMany({userId})
-
-        await User.deleteOne({_id: userId})
-
-
-    } catch(e){
-        return new Promise((resolve, reject) => {
-            reject(e)
-        })
-    }
-}
+UserSchema.virtual('posts', {
+    ref: 'Post',
+    localField:'_id',
+    foreignField:'userId'
+})
 
 const User = mongoose.model('User', UserSchema)
 

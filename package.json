@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "run-mongod-cmd": "/c/Users/hp/mongodb/bin/mongod --dbpath=/c/Users/mongodb-data",
+    "run-mongod-cmd": "/c/Users/hp/mongodb/bin/mongod --dbpath=/c/Users/hp/mongodb-data",
     "dbg": "node inspect app",
     "dev": "nodemon app",
     "test": "jest"

@@ -6,15 +6,12 @@ const app = new express.Router()
 
 app.post('/post/:id', async (req, res) => {
     try{
-      req.body.userId = req.params.id 
-
-      const post = new Post(req.body)
-      
-      await User.UserPosted(req.params.id, post._id)
-
-      await post.save()
-      res.send(post)
-
+        const post = new Post({
+            ...req.body,
+            userId:req.params.id
+        })
+        await post.save() 
+        res.send(post)
     } catch(e){
         res.send(e.message)  
     }
@@ -23,17 +20,29 @@ app.post('/post/:id', async (req, res) => {
 
 app.get('/posts/:id', async (req, res) => {
     try{
-        const posts = await Post.readPosts(req.params.id)
-        res.send(posts)
+        const user = await User.findById(req.params.id) 
+        if(!user) throw new Error('can\'t find this user') 
+        await user.populate('posts').execPopulate() ;
+        res.send(user.posts)
     } catch(e){
         res.send(e.message)
     }
 })
- 
+
 app.patch('/posts/:id', async (req, res) => { 
     try{
-       await Post.updatePost(req.body, req.params.id)
-       res.send('the post has been updated successfully!')
+       const post = await Post.findById(req.params.id)
+       const keys = Object.keys(req.body) 
+
+       if(!post) throw Error('Can\'t find this post')
+
+       keys.forEach((key) => {
+           post[key] = req.body[key]
+       })
+
+       await post.save() 
+       res.send(post)
+        
     } catch(e){
        res.send(e.message)
     }
@@ -42,8 +51,8 @@ app.patch('/posts/:id', async (req, res) => {
 
 app.delete('/posts/:id', async (req, res) => {
     try{ 
-        const user = await Post.deletePost(req.params.id)
-        res.send(user)
+       await Post.deleteOne({_id: req.params.id})
+       res.send('deleted')
     } catch(e){
         res.send(e.message)
     }
