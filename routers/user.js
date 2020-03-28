@@ -9,7 +9,8 @@ app.post('/signUp',  async (req, res) => {
     try{
       const user = new User(req.body)
       await user.save()  
-      res.send(user)
+      const token = await user.generateAuthToken()
+      res.send({user, token})
     } catch(e){
       res.status(404).send(e.message) 
     }

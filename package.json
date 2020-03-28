@@ -6,19 +6,21 @@
   "scripts": {
     "run-mongod-cmd": "/c/Users/hp/mongodb/bin/mongod --dbpath=/c/Users/hp/mongodb-data",
     "dbg": "node inspect app",
-    "dev": "nodemon app",
+    "dev": "env-cmd -f ./config/dev.env node app.js",
     "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "jest": "^25.1.0",
     "nodemon": "^2.0.2"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.5",
     "multer": "^1.4.2",
     "request": "^2.88.2"

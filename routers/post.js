@@ -1,6 +1,7 @@
 const express = require('express')
 const Post = require('../models/posts')
 const User = require('../models/users')
+const auth = require('../middleware/auth')
 
 const app = new express.Router()
 
@@ -18,8 +19,9 @@ app.post('/post/:id', async (req, res) => {
 })
 
 
-app.get('/posts/:id', async (req, res) => {
+app.get('/posts/:id', auth, async (req, res) => {
     try{
+        console.log(req.user)
         const user = await User.findById(req.params.id) 
         if(!user) throw new Error('can\'t find this user') 
         await user.populate('posts').execPopulate() ;
