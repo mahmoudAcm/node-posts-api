@@ -81,4 +81,21 @@ app.post('/users/:id/avatar', uploadAvatar.single('avatar'), async (req, res) =>
    res.status(400).send(error.message)
 })
 
+app.delete('/users/:id/avatar', async (req, res) => {
+  try{
+    
+    const user = await User.findById(req.params.id)
+    if(!user) throw new Error('can\'t find this user')
+
+    user.avatar = undefined 
+
+    await user.save()
+
+    res.send()
+
+  } catch(e){
+    res.send(e.message)
+  }
+})
+
 module.exports = app
