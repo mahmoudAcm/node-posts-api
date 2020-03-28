@@ -1,4 +1,5 @@
 const express = require('express')
+const multer = require('multer')
 const User = require('../models/users')
 const Post = require('../models/posts')
 
@@ -46,6 +47,38 @@ app.delete('/users/:id', async (req, res) => {
    } catch(e){
      res.send(e.message)
    }
+})
+
+const uploadAvatar = multer({
+  limits:{
+    fileSize:3000000
+  },
+  fileFilter(req, file, cb){
+    if(!file.originalname.match(/\.(png|jpg|jpeg)$/)){
+      return cb(new Error('Please upload an image'))
+    }
+
+    cb(undefined, true)
+  }
+})
+
+//adding avatar 
+app.post('/users/:id/avatar', uploadAvatar.single('avatar'), async (req, res) => {
+  try{
+    const user = await User.findById(req.params.id)
+    if(!user) throw new Error('can\'t find this user')
+
+    user.avatar = req.file.buffer 
+
+    await user.save()
+
+    res.send()
+
+  } catch(e){
+    res.send(e.message)
+  }
+}, (error, req, res, next) => {
+   res.status(400).send(error.message)
 })
 
 module.exports = app
