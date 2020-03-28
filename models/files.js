@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const fileSchema = new mongoose.Schema({
    postId:{
        type:mongoose.Schema.Types.ObjectId,
-       required:true
+       required:true,
+       ref:'Post'
    },
    filename:{
        type:String,

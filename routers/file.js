@@ -43,4 +43,28 @@ app.post('/file/:id', file.single('file'), async (req, res) => {
     res.send(400).send(err.message)
 })
 
+app.get('/files/:id', async (req, res) => {
+    try{
+        const post = await Post.findById(req.params.id)
+        await post.populate('files').execPopulate() 
+        res.send(post.files)    
+    } catch(e){
+        res.status(404).send(e.message)
+    }
+})
+
+app.delete('/files/:id', async (req, res) => {
+    try{
+        const file = await File.findById(req.params.id)
+        if(!file) throw new Error('this file is\'t found')
+
+        await file.deleteOne({_id: req.params.id})
+
+        res.send('removed')
+
+    } catch(e){
+        res.status(404).send(e.message)
+    }
+})
+
 module.exports = app

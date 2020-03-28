@@ -14,6 +14,12 @@ const PostsSchema = new mongoose.Schema({
     timestamps:true
 })
 
+PostsSchema.virtual('files', {
+    ref:'File',
+    localField:'_id',
+    foreignField:'postId'
+})
+
 const Post = mongoose.model('Post', PostsSchema)
 
 module.exports = Post
