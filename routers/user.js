@@ -16,6 +16,15 @@ app.post('/signUp',  async (req, res) => {
     }
 })
 
+app.post('/login', async (req, res) => {
+    try{
+       const user = await User.findByCredentials(req.body.email, req.body.password) 
+       res.send(user)
+    } catch(e){
+       res.status(404).send(e.message)
+    }
+})
+
 app.patch('/users/:id', async (req, res) => {
     try{
       const user = await User.findById(req.params.id)
