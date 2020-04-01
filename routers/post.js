@@ -5,11 +5,11 @@ const auth = require('../middleware/auth')
 
 const app = new express.Router()
 
-app.post('/post/:id', async (req, res) => {
+app.post('/post', auth, async (req, res) => {
     try{
         const post = new Post({
             ...req.body,
-            userId:req.params.id
+            userId:req.user._id
         })
         await post.save() 
         res.send(post)
@@ -19,10 +19,10 @@ app.post('/post/:id', async (req, res) => {
 })
 
 
-app.get('/posts/:id', auth, async (req, res) => {
+app.get('/posts', auth, async (req, res) => {
     try{
-        console.log(req.user)
-        const user = await User.findById(req.params.id) 
+        
+        const user = req.user
         if(!user) throw new Error('can\'t find this user') 
         await user.populate('posts').execPopulate() ;
         res.send(user.posts)
@@ -31,7 +31,7 @@ app.get('/posts/:id', auth, async (req, res) => {
     }
 })
 
-app.patch('/posts/:id', async (req, res) => { 
+app.patch('/posts/:id', auth, async (req, res) => { 
     try{
        const post = await Post.findById(req.params.id)
        const keys = Object.keys(req.body) 
@@ -51,7 +51,7 @@ app.patch('/posts/:id', async (req, res) => {
 })
 
 
-app.delete('/posts/:id', async (req, res) => {
+app.delete('/posts/:id', auth, async (req, res) => {
     try{ 
        await Post.deleteOne({_id: req.params.id})
        res.send('deleted')

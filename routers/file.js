@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const File = require('../models/files')
 const Post = require('../models/posts')
+const auth = require('../middleware/auth')
 
 const app = new express.Router()
 
@@ -18,7 +19,7 @@ const file = multer({
     }
 })
 
-app.post('/file/:id', file.single('file'), async (req, res) => {
+app.post('/file/:id', auth, file.single('file'), async (req, res) => {
     try{
       const post = await Post.findById(req.params.id)   
       if(!post) throw new Error('this post isn\'t found') 
@@ -43,7 +44,7 @@ app.post('/file/:id', file.single('file'), async (req, res) => {
     res.send(400).send(err.message)
 })
 
-app.get('/files/:id', async (req, res) => {
+app.get('/files/:id', auth, async (req, res) => {
     try{
         const post = await Post.findById(req.params.id)
         await post.populate('files').execPopulate() 
@@ -53,7 +54,7 @@ app.get('/files/:id', async (req, res) => {
     }
 })
 
-app.delete('/files/:id', async (req, res) => {
+app.delete('/files/:id', auth, async (req, res) => {
     try{
         const file = await File.findById(req.params.id)
         if(!file) throw new Error('this file is\'t found')

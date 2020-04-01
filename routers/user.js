@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const User = require('../models/users')
 const Post = require('../models/posts')
+const auth = require('../middleware/auth')
 
 const app = new express.Router()
 
@@ -19,15 +20,16 @@ app.post('/signUp',  async (req, res) => {
 app.post('/login', async (req, res) => {
     try{
        const user = await User.findByCredentials(req.body.email, req.body.password) 
-       res.send(user)
+       const token = await user.generateAuthToken()
+       res.send({user, token})
     } catch(e){
        res.status(404).send(e.message)
     }
 })
 
-app.patch('/users/:id', async (req, res) => {
+app.patch('/users', auth, async (req, res) => {
     try{
-      const user = await User.findById(req.params.id)
+      const user = req.user 
       const keys = Object.keys(req.body)
        
       if(!user) throw new Error('can\'t find this user')
@@ -45,17 +47,18 @@ app.patch('/users/:id', async (req, res) => {
     }
 })
 
-app.delete('/users/:id', async (req, res) => {
+app.delete('/users', auth, async (req, res) => {
    try{
-      const user = await User.findById(req.params.id) 
-      if(!user) throw new Error('can\'t find this user') 
-      
-      await User.deleteOne({_id: req.params.id}) 
-      await Post.deleteMany({userId: req.params.id}) ;
+      const id = req.user._id 
 
-     res.send(user) 
+      if(!req.user) throw new Error('can\'t find this user') 
+      
+      await User.deleteOne({_id: id}) 
+      await Post.deleteMany({userId: id}) ;
+
+     res.send(req.user) 
    } catch(e){
-     res.send(e.message)
+     res.status(404).send(e.message)
    }
 })
 
@@ -73,9 +76,9 @@ const uploadAvatar = multer({
 })
 
 //adding avatar 
-app.post('/users/:id/avatar', uploadAvatar.single('avatar'), async (req, res) => {
+app.post('/users/avatar',auth, uploadAvatar.single('avatar'), async (req, res) => {
   try{
-    const user = await User.findById(req.params.id)
+    const user = req.user
     if(!user) throw new Error('can\'t find this user')
 
     user.avatar = req.file.buffer 
@@ -91,10 +94,10 @@ app.post('/users/:id/avatar', uploadAvatar.single('avatar'), async (req, res) =>
    res.status(400).send(error.message)
 })
 
-app.delete('/users/:id/avatar', async (req, res) => {
+app.delete('/users/avatar', auth, async (req, res) => {
   try{
     
-    const user = await User.findById(req.params.id)
+    const user = req.user
     if(!user) throw new Error('can\'t find this user')
 
     user.avatar = undefined 
