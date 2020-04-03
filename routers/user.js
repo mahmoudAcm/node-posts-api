@@ -27,6 +27,18 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.post('/logout', auth, async (req, res) => {
+    try{
+      const user = req.user 
+      user.tokens = user.tokens.filter((token) => {
+          return token.token !== req.token
+      })
+      await user.save()
+    } catch(e){
+      res.status(404).send(e.message)
+    }
+})
+
 app.patch('/users', auth, async (req, res) => {
     try{
       const user = req.user 
