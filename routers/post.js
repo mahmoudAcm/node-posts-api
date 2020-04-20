@@ -21,10 +21,22 @@ app.post('/post', auth, async (req, res) => {
 
 app.get('/posts', auth, async (req, res) => {
     try{
-        
         const user = req.user
         if(!user) throw new Error('can\'t find this user') 
-        await user.populate('posts').execPopulate() ;
+
+        const sort = {} 
+
+        if(req.query.sortBy){
+            const parts = req.query.sortBy.split(":")
+            sort[parts[0]] = parts[1] === 'desc'? -1 : 1
+        }
+
+        await user.populate({
+            path:'posts',
+            options: {
+                sort
+            }
+        }).execPopulate() ;
         res.send(user.posts)
     } catch(e){
         res.send(e.message)
